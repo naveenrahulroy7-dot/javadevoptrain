@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    stages {
+        stage("Git Checkout") {
+            steps {
+                git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/Task2.git'
+            }
+        }
+
+        stage("Building the Application") {
+            steps {
+                echo "Building stage ...!"
+                sh 'mvn clean package'
+            }
+        }
+
+        stage("Testing the Application") {
+            steps {
+                echo "Testing the application ..!"
+                sh 'mvn test'
+            }
+        }
+
+        stage("Deploy") {
+            steps {
+                echo "Deploying the application ...!"
+                // Example deploy command (adjust as per your infra)
+                sh 'scp target/*.jar user@server:/opt/apps/'
+            }
+        }
+    }
+}
