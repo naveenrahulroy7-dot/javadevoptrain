@@ -48,8 +48,8 @@ pipeline {
             sudo docker rm -f task2-app || true
             sudo docker run -d --name task2-app -p 8080:8080 task2-app:latest
         '''
-    }
-}
+     }
+  }
 
     }
 }
