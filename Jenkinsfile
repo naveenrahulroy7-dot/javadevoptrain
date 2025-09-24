@@ -1,57 +1,54 @@
 pipeline {
     agent any
-    
-    tools {
-        jdk 'Java17'
+
+ tools {
         maven 'Maven3'
+        jdk 'JDK11'
     }
     environment {
-        APP_NAME = "task2-pipeline"
-        RELEASE = "1.0.0"
-        DOCKER_USER = "naveenrroy"
-        DOCKER_PASS = 'docker hub'
-        IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
-        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
-        JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
+        IMAGE_NAME = "internship-node-app"
+        REGISTRY = "docker.io/naveenrroy" // change to your DockerHub username
     }
+
     stages {
-        stage("Cleanup Workspace") {
+        stage('Checkout') {
             steps {
-                cleanWs()
+                git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/Task2.git'
             }
         }
 
-        stage("Checkout from SCM") {
+        stage('Install Dependencies') {
             steps {
-                git branch: 'main', credentialsId: 'github', url: 'https://github.com/naveen-rahul-roy/register-app'
+                sh 'npm install'
             }
         }
 
-        stage("Build Application") {
+        stage('Test') {
             steps {
-                sh "mvn clean package"
+                sh 'npm test || echo "No tests defined"'
             }
         }
 
-        stage("Test Application") {
+        stage('Build Docker Image') {
             steps {
-                sh "mvn test"
+                sh 'docker build -t $IMAGE_NAME:latest .'
             }
         }
 
-        stage("Build & Push Docker Image") {
+        stage('Push Docker Image') {
             steps {
-                script {
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image = docker.build "${IMAGE_NAME}"
-                    }
-
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image.push("${IMAGE_TAG}")
-                        docker_image.push('latest')
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest'
+                    sh 'docker push $REGISTRY/$IMAGE_NAME:latest'
                 }
             }
-       }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'docker run -d -p 3000:3000 $REGISTRY/$IMAGE_NAME:latest'
+            }
+        }
     }
 }
