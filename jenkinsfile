@@ -41,10 +41,15 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                sh 'docker run -d -p 3000:3000 $REGISTRY/$IMAGE_NAME:latest'
-            }
-        }
+        stage('Deploy (Docker)') {
+    steps {
+        sh '''
+            sudo docker build -t task2-app:latest .
+            sudo docker rm -f task2-app || true
+            sudo docker run -d --name task2-app -p 8080:8080 task2-app:latest
+        '''
+    }
+}
+
     }
 }
