@@ -19,10 +19,13 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
+    steps {
+        dir('app') {  // Replace 'app' with your subfolder name
+            sh 'npm install || { echo "npm install failed"; exit 254; }'
         }
+    }
+}
+
 
         stage('Test') {
             steps {
