@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+     tools {
+        maven 'Maven3'
+        jdk 'JDK11'
+    }
     environment {
         IMAGE_NAME = "task2-app"
         REGISTRY = "docker.io/naveenrroy"   // your DockerHub username
