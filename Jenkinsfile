@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-repo/internship-app.git'
+                git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/Task2.git'
             }
         }
 
