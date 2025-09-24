@@ -1,13 +1,13 @@
 pipeline {
     agent any
 
-     tools {
+tools {
         maven 'Maven3'
         jdk 'JDK11'
     }
     environment {
-        IMAGE_NAME = "task2-app"
-        REGISTRY = "docker.io/naveenrroy"   // your DockerHub username
+        IMAGE_NAME = "internship-node-app"
+        REGISTRY = "docker.io/naveenrroy" // change to your DockerHub username
     }
 
     stages {
@@ -38,21 +38,16 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest
-                        docker push $REGISTRY/$IMAGE_NAME:latest
-                    '''
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest'
+                    sh 'docker push $REGISTRY/$IMAGE_NAME:latest'
                 }
             }
         }
 
-        stage('Deploy (Docker)') {
+        stage('Deploy') {
             steps {
-                sh '''
-                    docker rm -f $IMAGE_NAME || true
-                    docker run -d --name $IMAGE_NAME -p 8080:8080 $REGISTRY/$IMAGE_NAME:latest
-                '''
+                sh 'docker run -d -p 3000:3000 $REGISTRY/$IMAGE_NAME:latest'
             }
         }
     }
