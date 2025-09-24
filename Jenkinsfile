@@ -1,54 +1,57 @@
 pipeline {
     agent any
-
+    
+    tools {
+        jdk 'Java17'
+        maven 'Maven3'
+    }
     environment {
-        APP_NAME = "train-ticket-reservation-system"
-        DOCKER_IMAGE = "train-ticket-reservation-system:latest"
+        APP_NAME = "task2-pipeline"
+        RELEASE = "1.0.0"
+        DOCKER_USER = "naveenrroy"
+        DOCKER_PASS = 'docker hub'
+        IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+        JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN")
     }
-
     stages {
-        stage('Build') {
+        stage("Cleanup Workspace") {
             steps {
-                echo "Building application..."
-                // Example: Build with Maven/Gradle/npm depending on project
-                sh 'mvn clean package -DskipTests'
+                cleanWs()
             }
         }
 
-        stage('Test') {
+        stage("Checkout from SCM") {
             steps {
-                echo "Running tests..."
-                // Run unit tests
-                sh 'mvn test'
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/naveen-rahul-roy/register-app'
             }
         }
 
-        stage('Docker Build') {
+        stage("Build Application") {
             steps {
-                echo "Building Docker image..."
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                sh "mvn clean package"
             }
         }
 
-        stage('Deploy') {
+        stage("Test Application") {
             steps {
-                echo "Deploying application container..."
-                // Stop old container if running
-                sh """
-                   docker stop ${APP_NAME} || true
-                   docker rm ${APP_NAME} || true
-                   docker run -d --name ${APP_NAME} -p 8080:8080 ${DOCKER_IMAGE}
-                """
+                sh "mvn test"
             }
         }
-    }
 
-    post {
-        success {
-            echo "Pipeline completed successfully!"
-        }
-        failure {
-            echo "Pipeline failed. Check logs."
-        }
+        stage("Build & Push Docker Image") {
+            steps {
+                script {
+                    docker.withRegistry('',DOCKER_PASS) {
+                        docker_image = docker.build "${IMAGE_NAME}"
+                    }
+
+                    docker.withRegistry('',DOCKER_PASS) {
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push('latest')
+                    }
+                }
+            }
+       }
     }
 }
