@@ -1,63 +1,48 @@
 pipeline {
-    agent any
-
-    tools {
-        maven 'Maven3'
-        jdk 'JDK11'
+  agent any
+  environment {
+    IMAGE = "dockerhub-user/task2" // change
+  }
+  stages {
+    stage('Checkout') {
+      steps { checkout scm }
     }
-
-    environment {
-        IMAGE_NAME = "internship-node-app"
-        REGISTRY = "docker.io/naveenrroy"   // your DockerHub username
+    stage('Install') {
+      steps { sh 'npm install' }
     }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/Task2.git'
-            }
-        }
-
-        stage('Install Dependencies') {
-    steps {
-        dir('app') {  // Replace 'app' with your subfolder name
-            sh 'npm install || { echo "npm install failed"; exit 254; }'
-        }
+    stage('Test') {
+      steps { sh 'npm test' }
     }
-}
-
-
-        stage('Test') {
-            steps {
-                sh 'npm test || echo "No tests defined"'
-            }
+    stage('Docker Build') {
+      steps {
+        script {
+          sh "docker build -t ${IMAGE}:${env.BUILD_NUMBER} ."
         }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest
-                        docker push $REGISTRY/$IMAGE_NAME:latest
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy (Docker)') {
-            steps {
-                sh '''
-                    docker rm -f $IMAGE_NAME || true
-                    docker run -d --name $IMAGE_NAME -p 8080:8080 $REGISTRY/$IMAGE_NAME:latest
-                '''
-            }
-        }
+      }
     }
+    stage('Docker Push') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+          sh "docker push ${IMAGE}:${env.BUILD_NUMBER}"
+          sh 'docker logout'
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        sh '''
+          docker stop jenkins-demo || true
+          docker rm jenkins-demo || true
+          docker run -d --name jenkins-demo -p 4000:3000 ${IMAGE}:${BUILD_NUMBER}
+        '''
+      }
+    }
+  }
+  post {
+    always {
+      echo "Pipeline finished - cleaning workspace"
+      deleteDir()
+    }
+  }
 }
