@@ -5,7 +5,8 @@ pipeline {
         stage("Git checkout") {
             steps {
               git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
-                 
+            }
+        }                 
         stage("Build") {
             steps {
                 sh 'mvn clean install'
@@ -16,6 +17,15 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        post {
+            success {
+                echo 'Build executed succesfully !'
+            }
+            failure {
+                echo 'Build failed !'
+            }
+        }
     }
 }
+
     
