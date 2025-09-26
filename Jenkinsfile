@@ -19,15 +19,14 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        post {
-            success {
-                echo 'Build executed succesfully !'
-            }
-            failure {
-                echo 'Build failed !'
+    }
+     post {
+        success {
+             echo 'Build executed succesfully !'
+        }
+        failure {
+             echo 'pipeline failed ! check logs once !'
             }
         }
     }
-}
-
     
