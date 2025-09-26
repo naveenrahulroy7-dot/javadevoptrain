@@ -2,11 +2,11 @@ pipeline {
     agent any 
 
     stages {
-        //stage("Git checkout") {
-         //   steps {
-         //     git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
-         //   }
-        //}                 
+        stage("Git checkout") {
+            steps {
+             git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
+            }
+        }                 
         stage("Build") {
             steps {
                 echo 'Building the application'
