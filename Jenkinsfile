@@ -1,54 +1,21 @@
 pipeline {
-    agent any
-
- tools {
-        maven 'Maven3'
-        jdk 'JDK11'
-    }
-    environment {
-        IMAGE_NAME = "internship-node-app"
-        REGISTRY = "docker.io/naveenrroy" // change to your DockerHub username
-    }
+    agent any 
 
     stages {
-        stage('Checkout') {
+        stage("Git checkout") {
             steps {
-                git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/Task2.git'
+              git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
+                 
+        stage("Build") {
+            steps {
+                sh 'mvn clean install'
             }
         }
-
-        stage('Install Dependencies') {
+        stage("Test") {
             steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'npm test || echo "No tests defined"'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh 'docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest'
-                    sh 'docker push $REGISTRY/$IMAGE_NAME:latest'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'docker run -d -p 3000:3000 $REGISTRY/$IMAGE_NAME:latest'
+                sh 'mvn test'
             }
         }
     }
 }
+    
