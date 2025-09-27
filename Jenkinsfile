@@ -1,14 +1,13 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKERHUB_CREDENTIALS=credentials('dockerhub-credentials-id')
-        DOCKER_IMAGE = "naveenrroy/java"
-    }
-
      tools {
         maven 'Maven3'
     }
+   /* environment {
+        DOCKERHUB_CREDENTIALS=credentials('dockerhub-credentials-id')
+        DOCKER_IMAGE = "naveenrroy/java"
+    } */
     
     stages {
         stage("Git checkout") {
@@ -28,11 +27,11 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        stage("Build Docker Image") {
+       /* stage("Build Docker Image") {
             steps {
             sh 'docker build -t $DOCKERIMAGE:$BUILD_NUMBER .'
         }
-     }
+     }*/
     }
      post {
         success {
