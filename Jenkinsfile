@@ -1,14 +1,15 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven3'
-    }
-
     environment {
         DOCKERHUB_CREDENTIALS=credentials('dockerhub-credentials-id')
         DOCKER_IMAGE = "naveenrroy/java"
     }
+
+     tools {
+        maven 'Maven3'
+    }
+    
     stages {
         stage("Git checkout") {
             steps {
