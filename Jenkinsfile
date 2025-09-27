@@ -28,8 +28,10 @@ pipeline {
             }
         }
         stage("Build Docker Image") {
+            steps {
             sh 'docker build -t $DOCKERIMAGE:$BUILD_NUMBER .'
         }
+     }
     }
      post {
         success {
