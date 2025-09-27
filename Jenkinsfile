@@ -5,7 +5,7 @@ pipeline {
         maven 'Maven3'
     }
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         DOCKER_IMAGE = "naveenrroy/java"
     } 
     
