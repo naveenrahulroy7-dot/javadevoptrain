@@ -4,6 +4,11 @@ pipeline {
     tools {
         maven 'Maven3'
     }
+
+    environment {
+        DOCKERHUB_CREDENTIALS=credentials('dockerhub-credentials-id')
+        DOCKER_IMAGE = "naveenrroy/java"
+    }
     stages {
         stage("Git checkout") {
             steps {
@@ -21,6 +26,9 @@ pipeline {
                 echo 'Testing the application'
                 sh 'mvn test'
             }
+        }
+        stage("Build Docker Image") {
+            sh 'docker build -t $DOCKERIMAGE:$BUILD_NUMBER .'
         }
     }
      post {
