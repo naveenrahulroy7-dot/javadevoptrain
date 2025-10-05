@@ -6,13 +6,13 @@ WORKDIR /app
 
 # Copy project files
 COPY pom.xml .
-COPY src ./src
+#COPY src ./src
 
 # Build the project and create a jar file
-RUN mvn clean package -DskipTests
+#RUN mvn clean package -DskipTests
 
 # Step 2: Use a lightweight JRE image to run the jar
-#FROM eclipse-temurin:17-jre-alpine
+#  FROM eclipse-temurin:17-jre-alpine
 
 # Set work directory
 #WORKDIR /app
