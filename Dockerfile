@@ -12,16 +12,16 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Step 2: Use a lightweight JRE image to run the jar
-FROM eclipse-temurin:17-jre-alpine
+#FROM eclipse-temurin:17-jre-alpine
 
 # Set work directory
-WORKDIR /app
+#WORKDIR /app
 
 # Copy the jar from build stage
-COPY --from=build /app/target/*.jar app.jar
+#COPY --from=build /app/target/*.jar app.jar
 
 # Expose application port (change if different)
-EXPOSE 8080
+#EXPOSE 8080
 
 # Command to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+#ENTRYPOINT ["java", "-jar", "app.jar"]
