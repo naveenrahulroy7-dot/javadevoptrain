@@ -92,6 +92,16 @@ pipeline {
             }
         }
     }
+   stage('Debug Registry Info') {
+   steps {
+    sh '''
+      echo "REGISTRY=$REGISTRY"
+      echo "IMAGE_NAME=$IMAGE_NAME"
+      docker info
+    '''
+  }
+}
+
 }
     post {
         success{
