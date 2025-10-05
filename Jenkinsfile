@@ -118,7 +118,7 @@ pipeline {
                     sh 'docker build -t $DOCKER_IMAGE .'
                     
                     echo "Login into Docker ...!"
-                    withCredentialsId([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                      
                      echo "Pushing the Docker Image ...!"
