@@ -65,7 +65,7 @@ pipeline {
     environment {
         REGISTRY = 'docker.io'
         IMAGE_NAME = 'naveenrroy/app'
-        DOCKER_CREDS = credentials('dockerhub')
+        DOCKER_CREDS = 'dockerhub'
     }
     stages {
         stage('git checkout') {
