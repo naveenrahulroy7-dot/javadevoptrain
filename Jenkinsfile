@@ -1,4 +1,4 @@
-a/*pipeline {
+/*pipeline {
     agent any
 
      tools {
