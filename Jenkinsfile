@@ -69,7 +69,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/youruser/yourrepo.git'
+                git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
             }
         }
 
