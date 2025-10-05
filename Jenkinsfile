@@ -102,13 +102,14 @@ pipeline {
        
      }
    }
-}
+ }
     
-post {
+ post {
     success {
         echo "Image pushed succesfully"
     }
     failure {
         echo "Pushing image failed"
     }
+ }
 }
