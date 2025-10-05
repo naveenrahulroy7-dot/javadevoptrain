@@ -56,60 +56,42 @@
 
 
 
-pipeline {
-    agent any 
 
-    parameters {
-        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker hub tag')
-    }
-    environment {
-        REGISTRY = 'docker.io'
-        IMAGE_NAME = 'naveenrroy/app'
-        DOCKER_CREDS = 'dockerhub'
-    }
-    stages {
-        stage('git checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
-            }
-        }
-        stage('Testing the application') {
-            steps{
-                sh 'mvn clean package'
-            }
-        }
-        stage('Build & push the Docker image') {
-            steps{
-                script{
-                     echo "Building the Docker Image !"
-                      def dockerImage = docker.build("${IMAGE_NAME}:${params.IMAGE_TAG}")
-                    
-                     echo "Pushing the Docker Image !"
-                      docker.withRegistry("https://${REGISTRY}", DOCKER_CREDS) {
-                      dockerImage.push()
-                }
-                echo "Image pushed succesfully ${IMAGE_NAME}:${IMAGE_TAG}"
-            }
-        }
-    }
-    stage('Debug Registry Info') {
-     steps {
-       sh '''
-         echo "REGISTRY=$REGISTRY"
-         echo "IMAGE_NAME=$IMAGE_NAME"
-         docker info
-         '''
-       
-     }
-   }
- }
+
+pipeline {
+    agent any
     
- post {
-    success {
-        echo "Image pushed succesfully"
+    environment {
+        DOCKERHUB_CREDS = credentials('dockerhub')  // Jenkins credentials ID
+        IMAGE = "naveenrroy/app:latest"
     }
-    failure {
-        echo "Pushing image failed"
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/youruser/yourrepo.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE .'
+            }
+        }
+
+        stage('Login to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push $IMAGE'
+            }
+        }
     }
- }
 }
+
