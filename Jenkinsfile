@@ -112,7 +112,7 @@ pipeline {
                 git branch: 'main', url:'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
             }
         }
-        stage('Build & Push Docker Image') {
+        /*stage('Build & Push Docker Image') {
             steps {
                     echo "Building the Docker Image ...!"
                     sh 'docker build -t $DOCKER_IMAGE .'
@@ -124,6 +124,22 @@ pipeline {
                      echo "Pushing the Docker Image ...!"
                      sh 'docker push $DOCKER_IMAGE'
                      
+                }
+            }
+        }*/
+
+        stage("Build & Push Image") {
+            steps {
+                script {
+                    echo "Building Image ...!"
+                    docker build -t $DOCKER_IMAGE .
+                    
+                    echo "Login into Docker ...!"
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        echo $DOCKER_PASS | Docker login -u $DOCKER_USER --password-stdin
+                    }
+                      
+                    docker push $DOCKER_IMAGE
                 }
             }
         }
