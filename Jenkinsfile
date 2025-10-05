@@ -76,7 +76,6 @@ pipeline {
         stage('Testing the application') {
             steps{
                 sh 'mvn clean package'
-                sh 'mvn build'
             }
         }
         stage('Build & push the Docker image') {
@@ -84,6 +83,7 @@ pipeline {
                 script{
                      echo "Building the Docker Image !"
                       def dockerImage = docker.build("${IMAGE_NAME}:${params.IMAGE_TAG}")
+                    
                      echo "Pushing the Docker Image !"
                       docker.withRegistry("https://${REGISTRY}", "${DOCKER_CREDS}"){
                       dockerImage.push()
