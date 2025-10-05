@@ -1,4 +1,4 @@
-/*pipeline {
+r/*pipeline {
     agent any
 
      tools {
@@ -92,23 +92,22 @@ pipeline {
             }
         }
     }
-   stage('Debug Registry Info') {
-   steps {
-    sh '''
-      echo "REGISTRY=$REGISTRY"
-      echo "IMAGE_NAME=$IMAGE_NAME"
-      docker info
-    '''
-  }
+    stage('Debug Registry Info') {
+     steps {
+       sh '''
+         echo "REGISTRY=$REGISTRY"
+         echo "IMAGE_NAME=$IMAGE_NAME"
+         docker info
+       '''
+     }
+   }
 }
-
-}
-    post {
-        success{
-        echo "Image pushed succesfully"
+post {
+ success{
+     echo "Image pushed succesfully"
     }
     failure {
         echo "Image not pushed"
-    }
-    }
+     }
+  }
 }
