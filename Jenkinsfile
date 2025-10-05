@@ -98,16 +98,17 @@ pipeline {
          echo "REGISTRY=$REGISTRY"
          echo "IMAGE_NAME=$IMAGE_NAME"
          docker info
-       '''
+         '''
+       
      }
    }
 }
+    
 post {
- success{
-     echo "Image pushed succesfully"
+    success {
+        echo "Image pushed succesfully"
     }
     failure {
-        echo "Image not pushed"
-     }
-  }
+        echo "Pushing image failed"
+    }
 }
