@@ -109,7 +109,7 @@ pipeline {
     stages {
         stage("git checkout") {
             steps {
-                giti branch: 'main', url:'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
+                git branch: 'main', url:'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
             }
         }
         stage('Build & Push Docker Image') {
