@@ -139,6 +139,7 @@ pipeline {
                     }
                       
                     sh 'docker push $DOCKER_IMAGE'
+                   sh 'docker logout'
             }
         }
     }
