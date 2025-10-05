@@ -92,7 +92,9 @@ pipeline {
             }
         }
     }
+}
     post {
+        success{
         echo "Image pushed succesfully"
     }
     failure {
