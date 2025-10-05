@@ -130,7 +130,6 @@ pipeline {
 
         stage("Build & Push Image") {
             steps {
-                script {
                     echo "Building Image ...!"
                     sh  'docker build -t $DOCKER_IMAGE .'
                     
@@ -140,7 +139,6 @@ pipeline {
                     }
                       
                     sh 'docker push $DOCKER_IMAGE'
-                }
             }
         }
     }
