@@ -130,15 +130,17 @@ pipeline {
 
         stage("Build & Push Image") {
             steps {
+                script {
                     echo "Building Image ...!"
                     sh  'docker build -t $DOCKER_IMAGE .'
                     
                     echo "Login into Docker ...!"
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh 'echo $DOCKER_PASS | Docker login -u $DOCKER_USER --password-stdin'
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     }
                       
                     sh 'docker push $DOCKER_IMAGE'
+                }
             }
         }
     }
