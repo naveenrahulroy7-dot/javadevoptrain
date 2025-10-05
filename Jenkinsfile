@@ -85,7 +85,7 @@ pipeline {
                       def dockerImage = docker.build("${IMAGE_NAME}:${params.IMAGE_TAG}")
                     
                      echo "Pushing the Docker Image !"
-                      docker.withRegistry("https://${REGISTRY}", "${DOCKER_CREDS}") {
+                      docker.withRegistry("https://${REGISTRY}", DOCKER_CREDS) {
                       dockerImage.push()
                 }
                 echo "Image pushed succesfully ${IMAGE_NAME}:${IMAGE_TAG}"
