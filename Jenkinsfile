@@ -1,4 +1,4 @@
-pipeline {
+/*pipeline {
     agent any
 
      tools {
@@ -50,4 +50,52 @@ pipeline {
             }
         }
     }
-    
+    */
+
+
+
+
+
+pipeline {
+    agent any 
+
+    parameters {
+        string(name: 'IMAGE_TAG', defaultvalue: 'latest', description: 'Docker hub tag')
+    }
+    environment {
+        REGISTRY = 'docker.io'
+        IMAGE_NAME = 'naveenrroy/app'
+        DOCKER_CREDS = 'dockerhub'
+    }
+    stages {
+        stage('git checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
+            }
+        }
+        stage('Testing the application') {
+            steps{
+                sh 'mvn clean package'
+                sh 'mvn build'
+            }
+        }
+        stage('Build & push the Docker image') {
+            steps{
+                script{
+                     echo "Building the Docker Image !"
+                      def dockerImage = docker.build("${IMAGE_NAME}:${params.IMAGE_TAG}")
+                     echo "Pushing the Docker Image !"
+                      docker.withRegistry("https://${REEGISTRY}", "${DOCKER_CREDS}")
+                      dockerImage.push()
+                }
+                echo "Image pushed succesfully ${IMAGE_NAME}:${IMAGE_TAG}"
+            }
+        }
+    }
+    post {
+        echo "Image pushed succesfully"
+    }
+    failure {
+        echo "Image not pushed"
+    }
+}
