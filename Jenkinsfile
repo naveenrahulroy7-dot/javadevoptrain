@@ -60,7 +60,7 @@ pipeline {
     agent any 
 
     parameters {
-        string(name: 'IMAGE_TAG', defaultvalue: 'latest', description: 'Docker hub tag')
+        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker hub tag')
     }
     environment {
         REGISTRY = 'docker.io'
@@ -85,7 +85,7 @@ pipeline {
                      echo "Building the Docker Image !"
                       def dockerImage = docker.build("${IMAGE_NAME}:${params.IMAGE_TAG}")
                      echo "Pushing the Docker Image !"
-                      docker.withRegistry("https://${REEGISTRY}", "${DOCKER_CREDS}")
+                      docker.withRegistry("https://${REGISTRY}", "${DOCKER_CREDS}"){
                       dockerImage.push()
                 }
                 echo "Image pushed succesfully ${IMAGE_NAME}:${IMAGE_TAG}"
@@ -97,5 +97,6 @@ pipeline {
     }
     failure {
         echo "Image not pushed"
+    }
     }
 }
