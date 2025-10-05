@@ -50,7 +50,7 @@
             }
         }
     }
-    */
+    
 
 
 
@@ -94,4 +94,40 @@ pipeline {
         }
     }
 }
+*/
 
+
+
+
+pipeline {
+    agent any 
+    
+    environment {
+        DOCKER_CREDS = 'dockerhub'
+        DOCKER_IMAGE = 'naveenrroy/app'
+    }
+    stages {
+        stage("git checkout") {
+            steps {
+                giti branch: 'main', url:'https://github.com/naveenrahulroy7-dot/javadevoptrain.git'
+            }
+        }
+        stage('Build & Push Docker Image') {
+            steps {
+                script {
+                    echo "Building the Docker Image ...!"
+                    docker build -t $DOCKER_IMAGE .
+                    
+                    echo "Login into Docker ...!"
+                    with CredentialsId(usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')) {
+                     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                     
+                     echo "Pushing the Docker Image ...!"
+                     docker push $DOCKER_IMAGE
+                     
+                    }
+                }
+            }
+        }
+    }
+}
